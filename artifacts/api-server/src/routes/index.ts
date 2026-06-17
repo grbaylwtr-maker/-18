@@ -13,6 +13,7 @@ import moodsRouter from "./moods";
 import bookmarksRouter from "./bookmarks";
 import searchRouter from "./search";
 import expressionsRouter from "./expressions";
+import activityRouter from "./activity";
 
 const router: IRouter = Router();
 
@@ -30,5 +31,6 @@ router.use(moodsRouter);
 router.use(bookmarksRouter);
 router.use(searchRouter);
 router.use(expressionsRouter);
+router.use(activityRouter);
 
 export default router;

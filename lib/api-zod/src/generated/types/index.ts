@@ -6,6 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './activityEvent';
+export * from './activityFeed';
 export * from './atriumStats';
 export * from './bookmark';
 export * from './bookmarkInput';
@@ -31,6 +33,7 @@ export * from './galaxyInput';
 export * from './galaxyMessage';
 export * from './galaxyMessageInput';
 export * from './galaxyMessagesPage';
+export * from './getRecentActivityParams';
 export * from './healthStatus';
 export * from './hotline';
 export * from './listBookmarksParams';

@@ -37,8 +37,30 @@ tags:
     description: Galaxy polls
   - name: comments
     description: Tale comments
+  - name: activity
+    description: Real-time platform activity feed
 
 paths:
+  /activity:
+    get:
+      operationId: getRecentActivity
+      tags: [activity]
+      summary: Get recent platform activity events
+      parameters:
+        - name: since
+          in: query
+          required: false
+          schema:
+            type: string
+            description: ISO timestamp — only return events after this time
+      responses:
+        "200":
+          description: Activity feed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityFeed"
+
   /healthz:
     get:
       operationId: healthCheck
@@ -1279,3 +1301,31 @@ components:
             $ref: "#/components/schemas/Expression"
         nextCursor:
           type: ["string", "null"]
+
+    ActivityEvent:
+      type: object
+      required: [id, type, label, color, href, timestamp]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        label:
+          type: string
+        color:
+          type: string
+        href:
+          type: string
+        timestamp:
+          type: string
+
+    ActivityFeed:
+      type: object
+      required: [events, total]
+      properties:
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/ActivityEvent"
+        total:
+          type: integer

@@ -9,6 +9,26 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary Get recent platform activity events
+ */
+export const GetRecentActivityQueryParams = zod.object({
+  "since": zod.coerce.string().optional()
+})
+
+export const GetRecentActivityResponse = zod.object({
+  "events": zod.array(zod.object({
+  "id": zod.string(),
+  "type": zod.string(),
+  "label": zod.string(),
+  "color": zod.string(),
+  "href": zod.string(),
+  "timestamp": zod.string()
+})),
+  "total": zod.number()
+})
+
+
+/**
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({

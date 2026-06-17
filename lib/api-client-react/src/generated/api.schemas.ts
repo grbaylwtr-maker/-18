@@ -339,6 +339,27 @@ export interface ExpressionsPage {
   nextCursor: string | null;
 }
 
+export interface ActivityEvent {
+  id: string;
+  type: string;
+  label: string;
+  color: string;
+  href: string;
+  timestamp: string;
+}
+
+export interface ActivityFeed {
+  events: ActivityEvent[];
+  total: number;
+}
+
+export type GetRecentActivityParams = {
+/**
+ * ISO timestamp — only return events after this time
+ */
+since?: string;
+};
+
 export type ListGalaxiesParams = {
 /**
  * @nullable
