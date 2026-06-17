@@ -1,22 +1,49 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Sanctuary – anonymous safe social platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: dimensions
+    description: The 12 cosmic dimensions
+  - name: galaxies
+    description: Group spaces (Galaxy dimension)
+  - name: tales
+    description: Stories and creative writing
+  - name: reels
+    description: Short visual content (Mirrors dimension)
+  - name: secrets
+    description: Anonymous secrets (Mystery dimension)
+  - name: pulses
+    description: Resonance reactions
+  - name: sanctuary
+    description: Emergency mental health support
+  - name: messages
+    description: Echo dimension 1-1 deep conversations
+  - name: moods
+    description: Anonymous mood journal
+  - name: bookmarks
+    description: Personal content bookmarks
+  - name: search
+    description: Search across all dimensions
+  - name: expressions
+    description: Expression dimension posts
+  - name: polls
+    description: Galaxy polls
+  - name: comments
+    description: Tale comments
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +51,648 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /dimensions:
+    get:
+      operationId: listDimensions
+      tags: [dimensions]
+      summary: List all 12 cosmic dimensions with live stats
+      responses:
+        "200":
+          description: All dimensions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dimension"
+
+  /dimensions/{dimensionId}/feed:
+    get:
+      operationId: getDimensionFeed
+      tags: [dimensions]
+      summary: Get content feed for a specific dimension
+      parameters:
+        - name: dimensionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Feed items
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeedPage"
+
+  /stats/atrium:
+    get:
+      operationId: getAtriumStats
+      tags: [dimensions]
+      summary: Get live stats for the main atrium
+      responses:
+        "200":
+          description: Atrium live stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AtriumStats"
+
+  /galaxies:
+    get:
+      operationId: listGalaxies
+      tags: [galaxies]
+      summary: List available galaxy spaces
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: Galaxies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Galaxy"
+    post:
+      operationId: createGalaxy
+      tags: [galaxies]
+      summary: Create a new galaxy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GalaxyInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Galaxy"
+
+  /galaxies/{galaxyId}/messages:
+    get:
+      operationId: getGalaxyMessages
+      tags: [galaxies]
+      summary: Get messages in a galaxy
+      parameters:
+        - name: galaxyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Messages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GalaxyMessagesPage"
+    post:
+      operationId: sendGalaxyMessage
+      tags: [galaxies]
+      summary: Send an anonymous message to a galaxy
+      parameters:
+        - name: galaxyId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GalaxyMessageInput"
+      responses:
+        "201":
+          description: Sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GalaxyMessage"
+
+  /galaxies/{galaxyId}/polls:
+    get:
+      operationId: getGalaxyPolls
+      tags: [polls]
+      summary: Get polls in a galaxy
+      parameters:
+        - name: galaxyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Polls
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Poll"
+    post:
+      operationId: createGalaxyPoll
+      tags: [polls]
+      summary: Create a poll in a galaxy
+      parameters:
+        - name: galaxyId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PollInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Poll"
+
+  /polls/{pollId}/vote:
+    post:
+      operationId: voteOnPoll
+      tags: [polls]
+      summary: Vote on a poll option
+      parameters:
+        - name: pollId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PollVoteInput"
+      responses:
+        "200":
+          description: Updated poll with new counts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Poll"
+
+  /tales:
+    get:
+      operationId: listTales
+      tags: [tales]
+      summary: List creative stories and writings
+      parameters:
+        - name: genre
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: cursor
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: Tales
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TalesPage"
+    post:
+      operationId: createTale
+      tags: [tales]
+      summary: Publish an anonymous story or poem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaleInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tale"
+
+  /tales/{taleId}/pulse:
+    post:
+      operationId: pulseTale
+      tags: [tales]
+      summary: Send a resonance pulse to a tale
+      parameters:
+        - name: taleId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Pulsed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PulseResult"
+
+  /tales/{taleId}/comments:
+    get:
+      operationId: getTaleComments
+      tags: [comments]
+      summary: Get comments on a tale
+      parameters:
+        - name: taleId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comment"
+    post:
+      operationId: addTaleComment
+      tags: [comments]
+      summary: Add an anonymous comment to a tale
+      parameters:
+        - name: taleId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentInput"
+      responses:
+        "201":
+          description: Comment added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+
+  /reels:
+    get:
+      operationId: listReels
+      tags: [reels]
+      summary: Get short visual content for Mirrors dimension
+      parameters:
+        - name: cursor
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: Reels
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReelsPage"
+
+  /reels/{reelId}/resonate:
+    post:
+      operationId: resonateReel
+      tags: [reels]
+      summary: Express resonance on a reel
+      parameters:
+        - name: reelId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Resonated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PulseResult"
+
+  /secrets:
+    post:
+      operationId: sendSecret
+      tags: [secrets]
+      summary: Send an anonymous secret into the void
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SecretInput"
+      responses:
+        "201":
+          description: Secret sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SecretResult"
+
+  /secrets/receive:
+    get:
+      operationId: receiveSecret
+      tags: [secrets]
+      summary: Receive a random anonymous secret from the void
+      responses:
+        "200":
+          description: A secret from the void
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReceivedSecret"
+
+  /messages/echo:
+    post:
+      operationId: startEchoSession
+      tags: [messages]
+      summary: Start a deep 1-1 echo conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EchoSessionInput"
+      responses:
+        "200":
+          description: Echo session started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EchoSession"
+
+  /messages/echo/{sessionId}:
+    get:
+      operationId: getEchoMessages
+      tags: [messages]
+      summary: Get messages from an echo session
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EchoMessage"
+    post:
+      operationId: sendEchoMessage
+      tags: [messages]
+      summary: Send a message in an echo session
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EchoMessageInput"
+      responses:
+        "201":
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EchoMessage"
+
+  /sanctuary/resources:
+    get:
+      operationId: getSanctuaryResources
+      tags: [sanctuary]
+      summary: Get emergency mental health resources
+      responses:
+        "200":
+          description: Resources
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SanctuaryResources"
+
+  /sanctuary/check-in:
+    post:
+      operationId: sanctuaryCheckIn
+      tags: [sanctuary]
+      summary: Anonymous emotional check-in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckInInput"
+      responses:
+        "200":
+          description: Supportive response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckInResponse"
+
+  /moods:
+    get:
+      operationId: listMoods
+      tags: [moods]
+      summary: Get recent mood entries for this session (stored locally, keyed by spectral token)
+      parameters:
+        - name: spectralToken
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Mood history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MoodEntry"
+    post:
+      operationId: createMood
+      tags: [moods]
+      summary: Log a mood entry anonymously
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoodInput"
+      responses:
+        "201":
+          description: Logged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MoodEntry"
+
+  /bookmarks:
+    get:
+      operationId: listBookmarks
+      tags: [bookmarks]
+      summary: Get bookmarks for a spectral token
+      parameters:
+        - name: spectralToken
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Bookmarks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Bookmark"
+    post:
+      operationId: addBookmark
+      tags: [bookmarks]
+      summary: Bookmark a piece of content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookmarkInput"
+      responses:
+        "201":
+          description: Bookmarked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Bookmark"
+
+  /bookmarks/{bookmarkId}:
+    delete:
+      operationId: removeBookmark
+      tags: [bookmarks]
+      summary: Remove a bookmark
+      parameters:
+        - name: bookmarkId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResult"
+
+  /search:
+    get:
+      operationId: searchContent
+      tags: [search]
+      summary: Search across tales, galaxies, and expressions
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: dimension
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResults"
+
+  /expressions:
+    get:
+      operationId: listExpressions
+      tags: [expressions]
+      summary: List expression posts (art, poetry, motion)
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: cursor
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: Expressions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpressionsPage"
+    post:
+      operationId: createExpression
+      tags: [expressions]
+      summary: Submit a new expression (art, poetry, visual, motion)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpressionInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expression"
+
+  /expressions/{expressionId}/resonate:
+    post:
+      operationId: resonateExpression
+      tags: [expressions]
+      summary: Resonate with an expression
+      parameters:
+        - name: expressionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Resonated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PulseResult"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +703,579 @@ components:
       required:
         - status
 
+    Dimension:
+      type: object
+      required: [id, name, nameAr, tagline, color, activeSpecters, icon]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        nameAr:
+          type: string
+        tagline:
+          type: string
+        color:
+          type: string
+        activeSpecters:
+          type: integer
+        icon:
+          type: string
+        description:
+          type: ["string", "null"]
+
+    FeedItem:
+      type: object
+      required: [id, dimensionId, type, createdAt]
+      properties:
+        id:
+          type: string
+        dimensionId:
+          type: string
+        type:
+          type: string
+        content:
+          type: ["string", "null"]
+        pulseCount:
+          type: integer
+        createdAt:
+          type: string
+
+    FeedPage:
+      type: object
+      required: [items, nextCursor]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/FeedItem"
+        nextCursor:
+          type: ["string", "null"]
+
+    Galaxy:
+      type: object
+      required: [id, name, category, memberCount, color, description]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        memberCount:
+          type: integer
+        color:
+          type: string
+        description:
+          type: string
+        isLive:
+          type: boolean
+
+    GalaxyInput:
+      type: object
+      required: [name, category, description]
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        color:
+          type: ["string", "null"]
+
+    GalaxyMessage:
+      type: object
+      required: [id, galaxyId, content, spectralColor, createdAt]
+      properties:
+        id:
+          type: string
+        galaxyId:
+          type: string
+        content:
+          type: string
+        spectralColor:
+          type: string
+        createdAt:
+          type: string
+
+    GalaxyMessagesPage:
+      type: object
+      required: [messages]
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/GalaxyMessage"
+
+    GalaxyMessageInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+        spectralColor:
+          type: ["string", "null"]
+
+    Poll:
+      type: object
+      required: [id, galaxyId, question, options, totalVotes, createdAt]
+      properties:
+        id:
+          type: string
+        galaxyId:
+          type: string
+        question:
+          type: string
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/PollOption"
+        totalVotes:
+          type: integer
+        endsAt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    PollOption:
+      type: object
+      required: [id, text, votes]
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        votes:
+          type: integer
+
+    PollInput:
+      type: object
+      required: [question, options]
+      properties:
+        question:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+        endsInHours:
+          type: ["integer", "null"]
+
+    PollVoteInput:
+      type: object
+      required: [optionId]
+      properties:
+        optionId:
+          type: string
+
+    Tale:
+      type: object
+      required: [id, title, content, genre, pulseCount, commentCount, createdAt]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        genre:
+          type: string
+        pulseCount:
+          type: integer
+        commentCount:
+          type: integer
+        excerpt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    TaleInput:
+      type: object
+      required: [title, content, genre]
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        genre:
+          type: string
+
+    TalesPage:
+      type: object
+      required: [items, nextCursor]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tale"
+        nextCursor:
+          type: ["string", "null"]
+
+    Comment:
+      type: object
+      required: [id, taleId, content, spectralColor, createdAt]
+      properties:
+        id:
+          type: string
+        taleId:
+          type: string
+        content:
+          type: string
+        spectralColor:
+          type: string
+        createdAt:
+          type: string
+
+    CommentInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+        spectralColor:
+          type: ["string", "null"]
+
+    Reel:
+      type: object
+      required: [id, thumbnailUrl, emotionTag, resonanceCount, durationSeconds, createdAt]
+      properties:
+        id:
+          type: string
+        thumbnailUrl:
+          type: string
+        videoUrl:
+          type: ["string", "null"]
+        emotionTag:
+          type: string
+        resonanceCount:
+          type: integer
+        durationSeconds:
+          type: integer
+        description:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    ReelsPage:
+      type: object
+      required: [items, nextCursor]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Reel"
+        nextCursor:
+          type: ["string", "null"]
+
+    PulseResult:
+      type: object
+      required: [newCount]
+      properties:
+        newCount:
+          type: integer
+
+    SecretInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+
+    SecretResult:
+      type: object
+      required: [sent, message]
+      properties:
+        sent:
+          type: boolean
+        message:
+          type: string
+
+    ReceivedSecret:
+      type: object
+      required: [id, content, receivedAt]
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        receivedAt:
+          type: string
+
+    EchoSessionInput:
+      type: object
+      required: [spectralColor]
+      properties:
+        spectralColor:
+          type: string
+        openingThought:
+          type: ["string", "null"]
+
+    EchoSession:
+      type: object
+      required: [sessionId, status, partnerSpectralColor, createdAt]
+      properties:
+        sessionId:
+          type: string
+        status:
+          type: string
+        partnerSpectralColor:
+          type: string
+        createdAt:
+          type: string
+
+    EchoMessage:
+      type: object
+      required: [id, sessionId, content, isMine, spectralColor, createdAt]
+      properties:
+        id:
+          type: string
+        sessionId:
+          type: string
+        content:
+          type: string
+        isMine:
+          type: boolean
+        spectralColor:
+          type: string
+        createdAt:
+          type: string
+
+    EchoMessageInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+
+    SanctuaryResources:
+      type: object
+      required: [breathingExercises, hotlines, affirmations]
+      properties:
+        breathingExercises:
+          type: array
+          items:
+            $ref: "#/components/schemas/BreathingExercise"
+        hotlines:
+          type: array
+          items:
+            $ref: "#/components/schemas/Hotline"
+        affirmations:
+          type: array
+          items:
+            type: string
+
+    BreathingExercise:
+      type: object
+      required: [name, inhaleSeconds, holdSeconds, exhaleSeconds, description]
+      properties:
+        name:
+          type: string
+        inhaleSeconds:
+          type: integer
+        holdSeconds:
+          type: integer
+        exhaleSeconds:
+          type: integer
+        description:
+          type: string
+
+    Hotline:
+      type: object
+      required: [country, name, number]
+      properties:
+        country:
+          type: string
+        name:
+          type: string
+        number:
+          type: string
+        available:
+          type: ["string", "null"]
+
+    CheckInInput:
+      type: object
+      required: [mood]
+      properties:
+        mood:
+          type: integer
+        note:
+          type: ["string", "null"]
+
+    CheckInResponse:
+      type: object
+      required: [message, suggestion]
+      properties:
+        message:
+          type: string
+        suggestion:
+          type: string
+        resourcesAvailable:
+          type: boolean
+
+    AtriumStats:
+      type: object
+      required: [totalSpectersOnline, activeDimensions, dimensionStats]
+      properties:
+        totalSpectersOnline:
+          type: integer
+        activeDimensions:
+          type: integer
+        dimensionStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/DimensionStat"
+
+    DimensionStat:
+      type: object
+      required: [dimensionId, activeSpecters, recentActivity]
+      properties:
+        dimensionId:
+          type: string
+        activeSpecters:
+          type: integer
+        recentActivity:
+          type: integer
+
+    MoodEntry:
+      type: object
+      required: [id, mood, createdAt]
+      properties:
+        id:
+          type: string
+        mood:
+          type: integer
+        note:
+          type: ["string", "null"]
+        emotion:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    MoodInput:
+      type: object
+      required: [mood, spectralToken]
+      properties:
+        mood:
+          type: integer
+        spectralToken:
+          type: string
+        note:
+          type: ["string", "null"]
+        emotion:
+          type: ["string", "null"]
+
+    Bookmark:
+      type: object
+      required: [id, contentType, contentId, createdAt]
+      properties:
+        id:
+          type: string
+        contentType:
+          type: string
+        contentId:
+          type: string
+        title:
+          type: ["string", "null"]
+        excerpt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    BookmarkInput:
+      type: object
+      required: [contentType, contentId, spectralToken]
+      properties:
+        contentType:
+          type: string
+        contentId:
+          type: string
+        spectralToken:
+          type: string
+        title:
+          type: ["string", "null"]
+        excerpt:
+          type: ["string", "null"]
+
+    DeleteResult:
+      type: object
+      required: [deleted]
+      properties:
+        deleted:
+          type: boolean
+
+    SearchResults:
+      type: object
+      required: [tales, galaxies, expressions, total]
+      properties:
+        tales:
+          type: array
+          items:
+            $ref: "#/components/schemas/Tale"
+        galaxies:
+          type: array
+          items:
+            $ref: "#/components/schemas/Galaxy"
+        expressions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Expression"
+        total:
+          type: integer
+
+    Expression:
+      type: object
+      required: [id, type, title, color, resonanceCount, createdAt]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        color:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        content:
+          type: ["string", "null"]
+        spectralAuthor:
+          type: ["string", "null"]
+        resonanceCount:
+          type: integer
+        size:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    ExpressionInput:
+      type: object
+      required: [type, title, color]
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        color:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        content:
+          type: ["string", "null"]
+        size:
+          type: ["string", "null"]
+
+    ExpressionsPage:
+      type: object
+      required: [items, nextCursor]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Expression"
+        nextCursor:
+          type: ["string", "null"]

@@ -1,0 +1,2 @@
+- [Sanctuary API types](sanctuary-api-types.md) — All IDs are `string` in generated API, not `number`; key input field names differ from intuition.
+- [Sanctuary project structure](sanctuary-structure.md) — Full-stack Arabic cosmic social platform; key files, stack, and feature map.
